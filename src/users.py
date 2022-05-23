@@ -1,4 +1,5 @@
 from flask import Blueprint
+from flask_api import status
 
 user = Blueprint("user", __name__, url_prefix="/api/user")
 
@@ -10,4 +11,4 @@ def register():
 
 @user.get('/')
 def getAll():
-    return {"users": []}
+    return {"users": []}, status.HTTP_200_OK
