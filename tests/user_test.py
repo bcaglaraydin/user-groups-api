@@ -94,3 +94,7 @@ class UserApiTest(unittest.TestCase):
                           'create'), json=UserApiTest.USER_OBJ6)
         self.assertEqual(r.status_code, status.HTTP_201_CREATED)
         self.assertEqual(r.json(), self.USER_OBJ6_EXPECT)
+
+    def test7_get_all_users(self):
+        r = requests.get(UserApiTest.USERS_URL)
+        self.assertTrue(status.is_success(r.status_code))

@@ -24,3 +24,16 @@ def create():
             'name': name
         }
     }), status.HTTP_201_CREATED
+
+
+@group.get('/')
+def getAllGroups():
+    all_groups = Group.query.all()
+
+    output = []
+
+    for user in all_groups:
+        group_data = {}
+        group_data['name'] = user.name
+        output.append(group_data)
+    return jsonify({'groups': output}), status.HTTP_200_OK

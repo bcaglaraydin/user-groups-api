@@ -42,5 +42,14 @@ def create():
 
 
 @user.get('/')
-def getAll():
-    return {"users": []}, status.HTTP_200_OK
+def getAllUsers():
+    all_users = User.query.all()
+
+    output = []
+
+    for user in all_users:
+        user_data = {}
+        user_data['name'] = user.name
+        user_data['email'] = user.email
+        output.append(user_data)
+    return jsonify({'users': output}), status.HTTP_200_OK
