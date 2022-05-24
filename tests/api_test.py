@@ -46,6 +46,20 @@ class ApiTest(unittest.TestCase):
         'password': 'b'
     }
 
+    USER_OBJ6 = {
+        'name': 'Boran Aydın',
+        'email': 'boranaydin@gmail.com',
+        'password': 'boransecret'
+    }
+
+    USER_OBJ6_EXPECT = {
+        'message': "User created",
+        'user': {
+            'name': 'Boran Aydın',
+            'email': 'boranaydin@gmail.com'
+        }
+    }
+
     def test0_get_all_users(self):
         r = requests.get(ApiTest.USERS_URL)
         self.assertTrue(status.is_success(r.status_code))
@@ -80,3 +94,9 @@ class ApiTest(unittest.TestCase):
                           'create'), json=ApiTest.USER_OBJ5)
         self.assertEqual(r.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(r.json(), {'error': "Password is too short"})
+
+    def test6_create_user_correct(self):
+        r = requests.post("{}/{}".format(ApiTest.USERS_URL,
+                          'create'), json=ApiTest.USER_OBJ6)
+        self.assertEqual(r.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(r.json(), self.USER_OBJ6_EXPECT)
