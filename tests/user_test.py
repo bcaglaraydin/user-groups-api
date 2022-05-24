@@ -3,7 +3,7 @@ import requests
 from flask_api import status
 
 
-class ApiTest(unittest.TestCase):
+class UserApiTest(unittest.TestCase):
 
     API_URL = "http://127.0.0.1:5000/api"
     USERS_URL = "{}/user".format(API_URL)
@@ -61,42 +61,36 @@ class ApiTest(unittest.TestCase):
     }
 
     def test0_get_all_users(self):
-        r = requests.get(ApiTest.USERS_URL)
+        r = requests.get(UserApiTest.USERS_URL)
         self.assertTrue(status.is_success(r.status_code))
 
     def test1_create_user_correct(self):
-        r = requests.post("{}/{}".format(ApiTest.USERS_URL,
-                          'create'), json=ApiTest.USER_OBJ1)
+        r = requests.post("{}/{}".format(UserApiTest.USERS_URL,
+                          'create'), json=UserApiTest.USER_OBJ1)
         self.assertEqual(r.status_code, status.HTTP_201_CREATED)
         self.assertEqual(r.json(), self.USER_OBJ1_EXPECT)
 
     def test2_create_user_email_confict(self):
-        r = requests.post("{}/{}".format(ApiTest.USERS_URL,
-                          'create'), json=ApiTest.USER_OBJ2)
+        r = requests.post("{}/{}".format(UserApiTest.USERS_URL,
+                          'create'), json=UserApiTest.USER_OBJ2)
         print(r.json())
         self.assertEqual(r.status_code, status.HTTP_409_CONFLICT)
         self.assertEqual(r.json(), {'error': "Email is taken"})
 
     def test3_create_user_name_confict(self):
-        r = requests.post("{}/{}".format(ApiTest.USERS_URL,
-                          'create'), json=ApiTest.USER_OBJ3)
+        r = requests.post("{}/{}".format(UserApiTest.USERS_URL,
+                          'create'), json=UserApiTest.USER_OBJ3)
         self.assertEqual(r.status_code, status.HTTP_409_CONFLICT)
         self.assertEqual(r.json(), {'error': "Name already exists"})
 
     def test4_create_user_email_notvalid(self):
-        r = requests.post("{}/{}".format(ApiTest.USERS_URL,
-                          'create'), json=ApiTest.USER_OBJ4)
+        r = requests.post("{}/{}".format(UserApiTest.USERS_URL,
+                          'create'), json=UserApiTest.USER_OBJ4)
         self.assertEqual(r.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(r.json(), {'error': "Email is not valid"})
 
-    def test5_create_user_pass_notvalid(self):
-        r = requests.post("{}/{}".format(ApiTest.USERS_URL,
-                          'create'), json=ApiTest.USER_OBJ5)
-        self.assertEqual(r.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(r.json(), {'error': "Password is too short"})
-
     def test6_create_user_correct(self):
-        r = requests.post("{}/{}".format(ApiTest.USERS_URL,
-                          'create'), json=ApiTest.USER_OBJ6)
+        r = requests.post("{}/{}".format(UserApiTest.USERS_URL,
+                          'create'), json=UserApiTest.USER_OBJ6)
         self.assertEqual(r.status_code, status.HTTP_201_CREATED)
         self.assertEqual(r.json(), self.USER_OBJ6_EXPECT)

@@ -1,7 +1,6 @@
-from this import d
 from flask import Blueprint, request, jsonify
 from flask_api import status
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import generate_password_hash
 import validators
 
 from src.database import User, db
@@ -10,7 +9,7 @@ user = Blueprint("user", __name__, url_prefix="/api/user")
 
 
 @user.post('/create')
-def register():
+def create():
     name = request.json['name']
     email = request.json['email']
     password = request.json['password']

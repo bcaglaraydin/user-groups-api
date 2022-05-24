@@ -1,6 +1,7 @@
 from flask import Flask
 import os
 from src.users import user
+from src.groups import group
 from src.database import db
 
 
@@ -20,4 +21,5 @@ def create_app(test_config=None):
     db.drop_all()
     db.create_all()
     app.register_blueprint(user)
+    app.register_blueprint(group)
     return app
