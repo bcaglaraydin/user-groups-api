@@ -3,7 +3,7 @@ import requests
 from flask_api import status
 
 
-class GroupApiTest(unittest.TestCase):
+class GroupCreateTest(unittest.TestCase):
 
     API_URL = "http://127.0.0.1:5000/api"
     GROUPS_URL = "{}/group".format(API_URL)
@@ -36,6 +36,31 @@ class GroupApiTest(unittest.TestCase):
         }
     }
 
+    def test1_create_group_correct(self):
+        r = requests.post("{}/{}".format(GroupCreateTest.GROUPS_URL,
+                          'create'), json=GroupCreateTest.GROUP_OBJ1)
+        self.assertEqual(r.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(r.json(), self.GROUP_OBJ1_EXPECT)
+
+    def test2_create_group_name_confict(self):
+        r = requests.post("{}/{}".format(GroupCreateTest.GROUPS_URL,
+                          'create'), json=GroupCreateTest.GROUP_OBJ2)
+        print(r.json())
+        self.assertEqual(r.status_code, status.HTTP_409_CONFLICT)
+        self.assertEqual(r.json(), {'error': "Name already exists"})
+
+    def test3_create_group_correct(self):
+        r = requests.post("{}/{}".format(GroupCreateTest.GROUPS_URL,
+                          'create'), json=GroupCreateTest.GROUP_OBJ3)
+        self.assertEqual(r.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(r.json(), self.GROUP_OBJ3_EXPECT)
+
+
+class GroupListTest(unittest.TestCase):
+
+    API_URL = "http://127.0.0.1:5000/api"
+    GROUPS_URL = "{}/group".format(API_URL)
+
     GROUP_LIST_OBJ1_EXPECT = {
         "groups": [
             {
@@ -56,6 +81,29 @@ class GroupApiTest(unittest.TestCase):
         }
     }
 
+    def test4_get_all_groups(self):
+        r = requests.get(GroupListTest.GROUPS_URL)
+        self.assertTrue(status.is_success(r.status_code))
+        self.assertEqual(r.json(), self.GROUP_LIST_OBJ1_EXPECT)
+
+    def test5_get_group(self):
+        id = 1
+        r = requests.get("{}/{}".format(GroupListTest.GROUPS_URL, id))
+        self.assertTrue(status.is_success(r.status_code))
+        self.assertEqual(r.json(), self.GROUP_GET_OBJ1_EXPECT)
+
+    def test6_get_group_not_found(self):
+        id = 9
+        r = requests.get("{}/{}".format(GroupListTest.GROUPS_URL, id))
+        self.assertEqual(r.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(r.json(), {'error': "Group not found!"})
+
+
+class GroupUpdateTest(unittest.TestCase):
+
+    API_URL = "http://127.0.0.1:5000/api"
+    GROUPS_URL = "{}/group".format(API_URL)
+
     GROUP_UPDATE_OBJ1 = {
         "name": "Çilekler"
     }
@@ -72,52 +120,16 @@ class GroupApiTest(unittest.TestCase):
         "name": "Group2"
     }
 
-    def test1_create_group_correct(self):
-        r = requests.post("{}/{}".format(GroupApiTest.GROUPS_URL,
-                          'create'), json=GroupApiTest.GROUP_OBJ1)
-        self.assertEqual(r.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(r.json(), self.GROUP_OBJ1_EXPECT)
-
-    def test2_create_group_name_confict(self):
-        r = requests.post("{}/{}".format(GroupApiTest.GROUPS_URL,
-                          'create'), json=GroupApiTest.GROUP_OBJ2)
-        print(r.json())
-        self.assertEqual(r.status_code, status.HTTP_409_CONFLICT)
-        self.assertEqual(r.json(), {'error': "Name already exists"})
-
-    def test3_create_group_correct(self):
-        r = requests.post("{}/{}".format(GroupApiTest.GROUPS_URL,
-                          'create'), json=GroupApiTest.GROUP_OBJ3)
-        self.assertEqual(r.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(r.json(), self.GROUP_OBJ3_EXPECT)
-
-    def test4_get_all_groups(self):
-        r = requests.get(GroupApiTest.GROUPS_URL)
-        self.assertTrue(status.is_success(r.status_code))
-        self.assertEqual(r.json(), self.GROUP_LIST_OBJ1_EXPECT)
-
-    def test5_get_group(self):
-        id = 1
-        r = requests.get("{}/{}".format(GroupApiTest.GROUPS_URL, id))
-        self.assertTrue(status.is_success(r.status_code))
-        self.assertEqual(r.json(), self.GROUP_GET_OBJ1_EXPECT)
-
-    def test6_get_group_not_found(self):
-        id = 9
-        r = requests.get("{}/{}".format(GroupApiTest.GROUPS_URL, id))
-        self.assertEqual(r.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(r.json(), {'error': "Group not found!"})
-
     def test10_edit_group(self):
         id = 1
-        r = requests.put("{}/{}".format(GroupApiTest.GROUPS_URL,
-                                        id), json=GroupApiTest.GROUP_UPDATE_OBJ1)
+        r = requests.put("{}/{}".format(GroupUpdateTest.GROUPS_URL,
+                                        id), json=GroupUpdateTest.GROUP_UPDATE_OBJ1)
         self.assertTrue(status.is_success(r.status_code))
         self.assertEqual(r.json(), self.GROUP_OBJ1_UPDATE_EXPECT)
 
     def test11_edit_group_email_conflict(self):
         id = 1
-        r = requests.patch("{}/{}".format(GroupApiTest.GROUPS_URL,
-                                          id), json=GroupApiTest.GROUP_UPDATE_OBJ2)
+        r = requests.patch("{}/{}".format(GroupUpdateTest.GROUPS_URL,
+                                          id), json=GroupUpdateTest.GROUP_UPDATE_OBJ2)
         self.assertEqual(r.status_code, status.HTTP_409_CONFLICT)
         self.assertEqual(r.json(), {'error': "Name already exists"})

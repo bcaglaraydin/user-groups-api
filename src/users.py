@@ -4,7 +4,7 @@ from flask_api import status
 from werkzeug.security import generate_password_hash
 import validators
 
-from src.database import User, db
+from src.database import User, Group, db
 
 user = Blueprint("user", __name__, url_prefix="/api/user")
 
@@ -113,4 +113,29 @@ def editUser(id):
             'name': _name,
             'email': _email
         }
+    }), status.HTTP_200_OK
+
+
+@user.post('/add')
+def addToGroup():
+    user_id = request.json["user_id"]
+    group_id = request.json["group_id"]
+
+    user = User.query.filter_by(id=user_id).first()
+    group = Group.query.filter_by(id=group_id).first()
+
+    if not user:
+        return jsonify({'error': 'User not found!'}), status.HTTP_404_NOT_FOUND
+
+    if not group:
+        return jsonify({'error': 'Group not found!'}), status.HTTP_404_NOT_FOUND
+
+    if user.group_id == group_id:
+        return jsonify({'error': 'User is already in this group!'}), status.HTTP_409_CONFLICT
+
+    user.group_id = group_id
+    db.session.commit()
+
+    return jsonify({
+        'message': "User " + user.name + " added to group " + group.name
     }), status.HTTP_200_OK

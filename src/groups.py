@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_api import status
 
 
-from src.database import Group, db
+from src.database import Group, User, db
 
 group = Blueprint("group", __name__, url_prefix="/api/group")
 
