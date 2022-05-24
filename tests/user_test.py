@@ -17,6 +17,7 @@ class UserApiTest(unittest.TestCase):
     USER_OBJ1_EXPECT = {
         'message': "User created",
         'user': {
+            'id': 1,
             'name': 'Berdan Çağlar Aydın',
             'email': 'bcaglaraydin@gmail.com'
         }
@@ -55,9 +56,54 @@ class UserApiTest(unittest.TestCase):
     USER_OBJ6_EXPECT = {
         'message': "User created",
         'user': {
+            'id': 2,
             'name': 'Boran Aydın',
             'email': 'boranaydin@gmail.com'
         }
+    }
+
+    USER_LIST_OBJ1_EXPECT = {
+        "users": [
+            {
+                "email": "bcaglaraydin@gmail.com",
+                "id": 1,
+                "name": "Berdan Çağlar Aydın"
+            },
+            {
+                "email": "boranaydin@gmail.com",
+                "id": 2,
+                "name": "Boran Aydın"
+            }
+        ]
+    }
+
+    USER_GET_OBJ1_EXPECT = {
+        'user': {
+            'id': 1,
+            'name': 'Berdan Çağlar Aydın',
+            'email': 'bcaglaraydin@gmail.com'
+        }
+    }
+
+    USER_UPDATE_OBJ1 = {
+        "name": "Çağlar Aydın",
+        "email": "bcaglaraydin@gmail.com",
+        "password": "secret"
+    }
+
+    USER_OBJ1_UPDATE_EXPECT = {
+        "message": "User updated",
+        "user": {
+            "email": "bcaglaraydin@gmail.com",
+            "id": 1,
+            "name": "Çağlar Aydın"
+        }
+    }
+
+    USER_UPDATE_OBJ2 = {
+        "name": "Çağlar Aydın",
+        "email": "boranaydin@gmail.com",
+        "password": "secret"
     }
 
     def test0_get_all_users(self):
@@ -98,3 +144,30 @@ class UserApiTest(unittest.TestCase):
     def test7_get_all_users(self):
         r = requests.get(UserApiTest.USERS_URL)
         self.assertTrue(status.is_success(r.status_code))
+        self.assertEqual(r.json(), self.USER_LIST_OBJ1_EXPECT)
+
+    def test8_get_user(self):
+        id = 1
+        r = requests.get("{}/{}".format(UserApiTest.USERS_URL, id))
+        self.assertTrue(status.is_success(r.status_code))
+        self.assertEqual(r.json(), self.USER_GET_OBJ1_EXPECT)
+
+    def test9_get_user_not_found(self):
+        id = 9
+        r = requests.get("{}/{}".format(UserApiTest.USERS_URL, id))
+        self.assertEqual(r.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(r.json(), {'error': "User not found!"})
+
+    def test10_edit_user(self):
+        id = 1
+        r = requests.put("{}/{}".format(UserApiTest.USERS_URL,
+                                        id), json=UserApiTest.USER_UPDATE_OBJ1)
+        self.assertTrue(status.is_success(r.status_code))
+        self.assertEqual(r.json(), self.USER_OBJ1_UPDATE_EXPECT)
+
+    def test11_edit_user_email_conflict(self):
+        id = 1
+        r = requests.patch("{}/{}".format(UserApiTest.USERS_URL,
+                                          id), json=UserApiTest.USER_UPDATE_OBJ2)
+        self.assertEqual(r.status_code, status.HTTP_409_CONFLICT)
+        self.assertEqual(r.json(), {'error': "Email is taken"})
