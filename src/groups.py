@@ -79,3 +79,41 @@ def editGroup(id):
             'name': _name
         }
     }), status.HTTP_200_OK
+
+
+@group.delete('/<id>')
+def deleteGroup(id):
+    group = Group.query.filter_by(id=id).first()
+
+    if not group:
+        return jsonify({'error': 'Group not found!'}), status.HTTP_404_NOT_FOUND
+
+    db.session.delete(group)
+    db.session.commit()
+
+    return jsonify({}), status.HTTP_204_NO_CONTENT
+
+
+@group.get('/members/<id>')
+def getMembers(id):
+
+    group = Group.query.filter_by(id=id).first()
+
+    if not group:
+        return jsonify({'error': 'Group not found!'}), status.HTTP_404_NOT_FOUND
+
+    members = User.query.filter_by(group_id=id)
+
+    group_data = {}
+    group_data['id'] = group.id
+    group_data['name'] = group.name
+
+    users = []
+    for user in members:
+        user_data = {}
+        user_data['id'] = user.id
+        user_data['name'] = user.name
+        user_data['email'] = user.email
+        users.append(user_data)
+
+    return jsonify({'group': group_data, 'users': users}), status.HTTP_200_OK

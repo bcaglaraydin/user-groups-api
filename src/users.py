@@ -1,6 +1,8 @@
+from email import message
 from statistics import median_low
 from flask import Blueprint, request, jsonify
 from flask_api import status
+from sqlalchemy import null
 from werkzeug.security import generate_password_hash
 import validators
 
@@ -139,3 +141,38 @@ def addToGroup():
     return jsonify({
         'message': "User " + user.name + " added to group " + group.name
     }), status.HTTP_200_OK
+
+
+@user.post('/remove')
+def removeFromGroup():
+    user_id = request.json["user_id"]
+    group_id = request.json["group_id"]
+
+    user = User.query.filter_by(id=user_id).first()
+    group = Group.query.filter_by(id=group_id).first()
+
+    if not user:
+        return jsonify({'error': 'User not found!'}), status.HTTP_404_NOT_FOUND
+
+    if user.group_id != group_id:
+        return jsonify({'error': 'User does not belong to this group!'}), status.HTTP_404_NOT_FOUND
+
+    user.group_id = None
+    db.session.commit()
+
+    return jsonify({
+        'message': "User " + user.name + " removed from group " + group.name
+    }), status.HTTP_200_OK
+
+
+@user.delete('/<id>')
+def deleteUser(id):
+    user = User.query.filter_by(id=id).first()
+
+    if not user:
+        return jsonify({'error': 'User not found!'}), status.HTTP_404_NOT_FOUND
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return jsonify({}), status.HTTP_204_NO_CONTENT
