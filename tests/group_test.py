@@ -174,13 +174,13 @@ class GroupGetUsersTest(unittest.TestCase):
         }
     }
 
-    def test12_get_users_correct(self):
+    def test12_get_users_from_group_correct(self):
         id = 1
         r = requests.get("{}/{}/{}".format(GROUPS_URL, 'members', id))
         self.assertTrue(status.is_success(r.status_code))
         self.assertEqual(r.json(), GroupGetUsersTest.GET_USERS_OBJ1_EXPECT)
 
-    def test13_get_users_correct(self):
+    def test13_get_users_from_group_correct(self):
 
         r = requests.post("{}/{}".format(USERS_URL,
                           'create'), json=GroupGetUsersTest.USER_OBJ1)
@@ -202,8 +202,72 @@ class GroupGetUsersTest(unittest.TestCase):
         self.assertEqual(r.status_code, status.HTTP_204_NO_CONTENT)
 
 
+class GroupDeleteTest(unittest.TestCase):
+
+    USER_ADD_GROUP_OBJ1 = {
+        "user_id": 1,
+        "group_id": 1
+    }
+
+    USER_OBJ1 = {
+        'name': 'Berdan Çağlar Aydın',
+        'email': 'bcaglaraydin@gmail.com',
+        'password': 'secret'
+    }
+
+    USER_OBJ1_EXPECT = {
+        'message': "User created",
+        'user': {
+            'id': 1,
+            'name': 'Berdan Çağlar Aydın',
+            'email': 'bcaglaraydin@gmail.com'
+        }
+    }
+
+    GROUP_OBJ1 = {
+        'name': 'Çilekler'
+    }
+
+    GROUP_OBJ1_EXPECT = {
+        'message': "Group created",
+        'group': {
+            'id': 3,
+            'name': 'Çilekler'
+        }
+    }
+
+    def test14_delete_group_correct(self):
+        r = requests.post("{}/{}".format(USERS_URL,
+                          'create'), json=GroupDeleteTest.USER_OBJ1)
+        self.assertEqual(r.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(r.json(), self.USER_OBJ1_EXPECT)
+
+        r = requests.post("{}/{}".format(USERS_URL,
+                                         'add'), json=GroupDeleteTest.USER_ADD_GROUP_OBJ1)
+        self.assertTrue(status.is_success(r.status_code))
+        self.assertEqual(r.json(), {
+                         'message': "User " + "Berdan Çağlar Aydın" + " added to group " + "Çilekler"})
+        id = 1
+        r = requests.delete("{}/{}".format(GROUPS_URL,
+                                           id))
+        self.assertEqual(r.status_code, status.HTTP_204_NO_CONTENT)
+
+        r = requests.get("{}/{}".format(GROUPS_URL, id))
+        self.assertEqual(r.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(r.json(), {'error': 'Group not found!'})
+
+        r = requests.delete("{}/{}".format(USERS_URL,
+                                           id))
+        self.assertEqual(r.status_code, status.HTTP_204_NO_CONTENT)
+
+        r = requests.post("{}/{}".format(GROUPS_URL,
+                          'create'), json=GroupDeleteTest.GROUP_OBJ1)
+        self.assertEqual(r.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(r.json(), self.GROUP_OBJ1_EXPECT)
+
+
 test_cases = (GroupCreateTest, GroupListTest,
-              GroupUpdateTest, GroupGetUsersTest)
+              GroupUpdateTest, GroupGetUsersTest, GroupDeleteTest)
 
 
 def load_tests(loader, tests, pattern):

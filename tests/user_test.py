@@ -183,7 +183,7 @@ class UserAddToGroupTest(unittest.TestCase):
 
     USER_ADD_GROUP_OBJ1 = {
         "user_id": 1,
-        "group_id": 1
+        "group_id": 3
     }
 
     def test12_user_add_to_group(self):
@@ -219,7 +219,7 @@ class UserRemoveFromGroupTest(unittest.TestCase):
 
     USER_REMOVE_GROUP_OBJ1 = {
         "user_id": 1,
-        "group_id": 1
+        "group_id": 3
     }
 
     def test16_user_remove_from_group_correct(self):
