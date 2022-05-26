@@ -1,6 +1,6 @@
 # user-groups-api
 
-Simple API to handle users and groups using Docker/ Python / Flask / nginx / uWSGI /
+Simple API to handle users and groups using Docker / Python / Flask / nginx / uWSGI / SQLite
 
 ## Local setup
 
