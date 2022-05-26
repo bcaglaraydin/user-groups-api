@@ -2,7 +2,7 @@ import unittest
 import requests
 from flask_api import status
 
-API_URL = "http://127.0.0.1:5000/api"
+API_URL = "http://localhost/api"
 GROUPS_URL = "{}/group".format(API_URL)
 USERS_URL = "{}/user".format(API_URL)
 
