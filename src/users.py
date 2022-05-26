@@ -12,7 +12,7 @@ user = Blueprint("user", __name__, url_prefix="/api/user")
 
 
 @user.post('/create')
-def create():
+def createUser():
     name = request.json['name']
     email = request.json['email']
     password = request.json['password']
@@ -75,7 +75,6 @@ def getUser(id):
     return jsonify({'user': user_data}), status.HTTP_200_OK
 
 
-@user.patch('/<id>')
 @user.put('/<id>')
 def editUser(id):
 

@@ -173,8 +173,8 @@ class UserUpdateTest(unittest.TestCase):
 
     def test11_edit_user_email_conflict(self):
         id = 1
-        r = requests.patch("{}/{}".format(USERS_URL,
-                                          id), json=UserUpdateTest.USER_UPDATE_OBJ2)
+        r = requests.put("{}/{}".format(USERS_URL,
+                                        id), json=UserUpdateTest.USER_UPDATE_OBJ2)
         self.assertEqual(r.status_code, status.HTTP_409_CONFLICT)
         self.assertEqual(r.json(), {'error': "Email is taken"})
 

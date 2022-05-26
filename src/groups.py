@@ -8,7 +8,7 @@ group = Blueprint("group", __name__, url_prefix="/api/group")
 
 
 @group.post('/create')
-def create():
+def createGroup():
     name = request.json['name']
 
     if Group.query.filter_by(name=name).first() is not None:
@@ -55,7 +55,6 @@ def getGroup(id):
     return jsonify({'group': group_data}), status.HTTP_200_OK
 
 
-@group.patch('/<id>')
 @group.put('/<id>')
 def editGroup(id):
 

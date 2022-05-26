@@ -124,8 +124,8 @@ class GroupUpdateTest(unittest.TestCase):
 
     def test11_edit_group_email_conflict(self):
         id = 1
-        r = requests.patch("{}/{}".format(GROUPS_URL,
-                                          id), json=GroupUpdateTest.GROUP_UPDATE_OBJ2)
+        r = requests.put("{}/{}".format(GROUPS_URL,
+                                        id), json=GroupUpdateTest.GROUP_UPDATE_OBJ2)
         self.assertEqual(r.status_code, status.HTTP_409_CONFLICT)
         self.assertEqual(r.json(), {'error': "Name already exists"})
 
